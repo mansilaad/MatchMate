@@ -6,55 +6,74 @@
 //
 
 import SwiftUI
-//import SDWebImageSwiftUI
+import SDWebImageSwiftUI
+
 
 struct MatchCardView: View {
     let user: Result
-    let onAccept: () -> Void
-    let onDecline: () -> Void
+    @ObservedObject var viewModel: MatchViewModel
     
-    var body: some View {        
-        if !user.name.first.isEmpty && !user.name.last.isEmpty {
-            VStack(alignment: .center, spacing: 12) {
-                Text("\(user.name.first) \(user.name.last), \(user.dob.age)")
-                    .font(.headline)
-                    .foregroundColor(.primary)
-
-                if !user.location.city.isEmpty && !user.location.state.isEmpty {
-                    Text("\(user.location.city), \(user.location.state)")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-
-                if let age = user.registered.age as Int? {
-                    Text("\(age), \(user.location.city)").font(.subheadline)
-                }
-
+    var body: some View {
+        VStack(alignment: .center, spacing: 12) {
+            
+            if let imageUrl = URL(string: user.picture.medium), !user.picture.medium.isEmpty {
+                WebImage(url: imageUrl)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 150, height: 150)
+                    .padding(.top, 20)
+            } else {
+                Image(systemName: "person.crop.circle.fill") // Placeholder image
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 150, height: 150)
+                    .foregroundColor(.gray)
+                    .padding(.top, 20)
+            }
+            
+            Text("\(user.name.first) \(user.name.last)")
+                .font(.title)
+                .foregroundColor(Color("MaxBlueGreen"))
+                .fontWeight(.bold)
+            
+            if !user.location.city.isEmpty && !user.location.state.isEmpty {
+                Text("\(user.dob.age), \(user.location.city), \(user.location.state)")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            
+            
+            if viewModel.statusDict[user.id] == nil {
                 HStack(spacing: 20) {
-                    Button(action: {}) {
-                        Image(systemName: "xmark.circle.fill")
-                            .resizable()
-                            .frame(width: 50, height: 50)
-                            .foregroundColor(.red)
+                    CircularButton(systemImage: "multiply") {
+                        viewModel.updateUserStatus(id: user.id, status: "Declined")
                     }
                     
-                    Button(action: {}) {
-                        Image(systemName: "heart.circle.fill")
-                            .resizable()
-                            .frame(width: 50, height: 50)
-                            .foregroundColor(.green)
+                    CircularButton(systemImage: "checkmark") {
+                        viewModel.updateUserStatus(id: user.id, status: "Accepted")
                     }
+                    
                 }
-            }
-            .padding()
-            .background(Color.white)
-            .cornerRadius(15)
-            .shadow(radius: 5)
-        }
+                .padding(.bottom, 20)
 
+            } else {
+                if let status = viewModel.statusDict[user.id] {
+                                    Spacer()
+                                    Text(status)
+                                        .font(.headline)
+                                        .foregroundColor(.white)
+                                        .padding()
+                                        .frame(maxWidth: .infinity)
+                                        .background(Color("MaxBlueGreen"))
+                                        .cornerRadius(10)
+                                        .padding(.top, 10)
+                                }
+
+            }
+        }
+        .frame(width: 300, height: 350)
+        .background(Color.white)
+        .cornerRadius(15)
+        .shadow(radius: 5)
     }
 }
-
-
-
-
