@@ -4,82 +4,71 @@
 //
 //  Created by Mansi Laad on 13/02/25.
 //
-//
-//import CoreData
-//
-//class CoreDataManager {
-//    static let shared = CoreDataManager()
-//    private let container: NSPersistentContainer
-//
-//    init() {
-//        container = NSPersistentContainer(name: "MatchMateDB")
-//        container.loadPersistentStores { _, error in
-//            if let error = error {
-//                print("Core Data load error: \(error.localizedDescription)")
-//            }
-//        }
-//    }
-//
-//    var context: NSManagedObjectContext {
-//        return container.viewContext
-//    }
-//
-//    /// Save users to Core Data
-//    func saveUsers(_ users: [Result]) {
-//        users.forEach { user in
-//            let entity = UserEntity(context: context)
-//            entity.id = user.id
-//            entity.name = user.name
-//            entity.age = Int16(user.age)
-//            entity.location = user.location
-//            entity.imageUrl = user.imageUrl
-//            entity.status = user.status?.rawValue
-//        }
-//        saveContext()
-//    }
-//
-//    /// Load users from Core Data
-//    func loadUsers() -> [Result] {
-//        let request: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()
-//        do {
-//            let entities = try context.fetch(request)
-//            return entities.map {
-//                UserProfile(
-//                    id: $0.id ?? "",
-//                    name: $0.name ?? "",
-//                    age: Int($0.age),
-//                    location: $0.location ?? "",
-//                    imageUrl: $0.imageUrl ?? "",
-//                    status: UserProfile.MatchStatus(rawValue: $0.status ?? "")
-//                )
-//            }
-//        } catch {
-//            print("Failed to fetch users: \(error.localizedDescription)")
-//            return []
-//        }
-//    }
-//
-//    /// Update user match status
-//    func updateUserStatus(id: String, status: UserProfile.MatchStatus) {
-//        let request: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()
-//        request.predicate = NSPredicate(format: "id == %@", id)
-//
-//        do {
-//            if let entity = try context.fetch(request).first {
-//                entity.status = status.rawValue
-//                saveContext()
-//            }
-//        } catch {
-//            print("Failed to update status: \(error.localizedDescription)")
-//        }
-//    }
-//
-//    /// Save Core Data context
-//    private func saveContext() {
-//        do {
-//            try context.save()
-//        } catch {
-//            print("Failed to save Core Data: \(error.localizedDescription)")
-//        }
-//    }
-//}
+
+import CoreData
+
+class CoreDataManager {
+    static let shared = CoreDataManager()
+    
+    let persistentContainer: NSPersistentContainer
+    
+    private init() {
+        persistentContainer = NSPersistentContainer(name: "MatchMateModel")
+        persistentContainer.loadPersistentStores { (storeDescription, error) in
+            if let error = error as NSError? {
+                fatalError("Unresolved error \(error), \(error.userInfo)")
+            }
+        }
+    }
+    
+    func saveContext() {
+        let context = persistentContainer.viewContext
+        if context.hasChanges {
+            do {
+                try context.save()
+            } catch {
+                let nserror = error as NSError
+                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+            }
+        }
+    }
+    
+    func fetchUserProfiles() -> [UserProfile] {
+        let request: NSFetchRequest<UserProfile> = UserProfile.fetchRequest()
+        do {
+            return try persistentContainer.viewContext.fetch(request)
+        } catch {
+            print("Error fetching user profiles: \(error)")
+            return []
+        }
+    }
+    
+    func saveUserProfile(from result: Result, status: String?) {
+        let context = persistentContainer.viewContext
+        let userProfile = UserProfile(context: context)
+        userProfile.id = result.id
+        userProfile.firstName = String(result.name.first)
+        userProfile.lastName = String(result.name.last)
+        userProfile.age = Int16(result.dob.age)
+        userProfile.city = String(result.location.city)
+        userProfile.state = result.location.state
+        userProfile.status = status
+        saveContext()
+    }
+
+    func updateUserProfileStatus(id: String, status: String) {
+        let context = persistentContainer.viewContext
+        let request: NSFetchRequest<UserProfile> = UserProfile.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id)
+        do {
+            if let userProfile = try context.fetch(request).first {
+                userProfile.status = status
+                saveContext()
+                print("updated")
+            }
+        } catch {
+            print("Error updating user profile status: \(error)")
+        }
+    }
+    
+}
