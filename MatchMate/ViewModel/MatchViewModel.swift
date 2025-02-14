@@ -113,10 +113,8 @@ class MatchViewModel: ObservableObject {
 
     
     func updateUserStatus(id: String, status: String) {
-        print("calling update user \(status)")
-        statusDict[id] = status // Update status in the dictionary
+        statusDict[id] = status
         
-        print("dict \(statusDict)")
         coreDataManager.updateUserProfileStatus(id: id, status: status) // Save to Core Data
         objectWillChange.send() // Manually trigger a UI update
 
