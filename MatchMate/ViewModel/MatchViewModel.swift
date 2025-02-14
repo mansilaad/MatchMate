@@ -12,29 +12,45 @@ import CoreData
 class MatchViewModel: ObservableObject {
     @Published var users: [Result] = []
     @Published var errorMessage: String?
+    @Published var statusDict: [String: String] = [:] // Stores status per user ID
     
     private var cancellables = Set<AnyCancellable>()
     private let apiURL = "https://randomuser.me/api/?results=10"
-    //private let coreDataManager = CoreDataManager.shared
+    private let coreDataManager = CoreDataManager.shared
     
-    init() {
-        fetchUsers()
-    }
+     init() {
+             observeNetworkStatus() // Observe network status changes
+     }
     
-    /// Fetch users from API or Core Data if offline
+     private func observeNetworkStatus() {
+             NetworkMonitor.shared.$isConnected
+                 .receive(on: DispatchQueue.main)
+                 .sink { [weak self] isConnected in
+                     self?.fetchUsers()
+                 }
+                 .store(in: &cancellables)
+     }
+
+
+    
     func fetchUsers() {
-        if NetworkMonitor.shared.isConnected {
-            fetchFromAPI()
-        } else {
-            //fetchFromCoreData()
+        
+        if !NetworkMonitor.shared.isConnected {
+            fetchFromCoreData() // Show cached data first if offline
+            loadStatusFromCoreData()
+            return
         }
+        fetchFromAPI()
+
     }
+    
+    
     
     func fetchFromAPI() {
         guard let url = URL(string: apiURL) else { return }
         
         URLSession.shared.dataTaskPublisher(for: url)
-            .map(\ .data)
+            .map(\.data)
             .decode(type: UserResponse.self, decoder: JSONDecoder())
             .map { $0.results }
             .receive(on: DispatchQueue.main)
@@ -43,28 +59,67 @@ class MatchViewModel: ObservableObject {
                     self.errorMessage = "Failed to load users: \(error.localizedDescription)"
                 }
             }, receiveValue: { response in
-                //DispatchQueue.main.async {
-                    self.users = response
-                    print("Fetched Users: \(response)")
-                //}
+                self.users = response
+                self.saveUsersToCoreData(response) // Save users to Core Data
+                self.loadStatusFromCoreData() // Load status from Core Data
+
             })
             .store(in: &cancellables)
     }
     
-    /// Fetch users from Core Data
-//    private func fetchFromCoreData() {
-//        users = coreDataManager.loadUsers()
-//    }
+    func fetchFromCoreData() {
+        let userProfiles = coreDataManager.fetchUserProfiles()
+        self.users = userProfiles.map { result in
+            Result(
+                gender: .male, // Default value, adjust as needed
+                name: Name(title: "", first: result.firstName ?? "", last: result.lastName ?? ""),
+                location: Location(
+                    street: Street(number: 0, name: ""),
+                    city: result.city ?? "",
+                    state: result.state ?? "",
+                    country: "",
+                    postcode: .string(""),
+                    coordinates: Coordinates(latitude: "", longitude: ""),
+                    timezone: Timezone(offset: "", description: "")
+                ),
+                email: "",
+                login: Login(uuid: result.id ?? "", username: "", password: "", salt: "", md5: "", sha1: "", sha256: ""),
+                dob: Dob(date: "", age: Int(result.age)),
+                registered: Dob(date: "", age: 0),
+                phone: "",
+                cell: "",
+                idInfo: ID(name: "", value: nil),
+                picture: Picture(large: "", medium: "", thumbnail: ""),
+                nat: "",
+                status: result.status
+            )
+        }
+    }
     
-    
-    
-    /// Accept/Decline match
-//    func updateMatchStatus(user: Result, status: Result.MatchStatus) {
-//        if let index = users.firstIndex(where: { $0.id == user.id }) {
-//            users[index].status = status
-//            coreDataManager.updateUserStatus(id: user.id, status: status)
-//        }
-//    }
-    
-}
+    func saveUsersToCoreData(_ users: [Result]) {
+        for user in users {
+            coreDataManager.saveUserProfile(from: user, status: statusDict[user.id])
+        }
+    }
+            
+    func loadStatusFromCoreData() {
+            let userProfiles = coreDataManager.fetchUserProfiles()
+            for profile in userProfiles {
+                if let id = profile.id, let status = profile.status {
+                    statusDict[id] = status
+                }
+            }
+        }
 
+    
+    func updateUserStatus(id: String, status: String) {
+        print("calling update user \(status)")
+        statusDict[id] = status // Update status in the dictionary
+        
+        print("dict \(statusDict)")
+        coreDataManager.updateUserProfileStatus(id: id, status: status) // Save to Core Data
+        objectWillChange.send() // Manually trigger a UI update
+
+    }
+
+}

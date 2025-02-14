@@ -25,23 +25,9 @@ import Foundation
      let version: String
  }
 
- //// MARK: - Result
- //struct Result: Codable, Identifiable {
- //    let gender: Gender
- //    let name: Name
- //    let location: Location
- //    let email: String
- //    let login: Login
- //    let dob, registered: Dob
- //    let phone, cell: String
- //    let id: ID
- //    let picture: Picture
- //    let nat: String
- //}
-
  // MARK: - Result
  struct Result: Codable, Identifiable {
-     var id: String { UUID().uuidString } // ✅ Conforming to Identifiable
+     var id: String { login.uuid } // ✅ Conforming to Identifiable
      let gender: Gender
      let name: Name
      let location: Location
@@ -52,6 +38,7 @@ import Foundation
      let idInfo: ID // Renamed to avoid conflict
      let picture: Picture
      let nat: String
+     var status: String? = nil // Add this for frontend use
 
      enum CodingKeys: String, CodingKey {
          case gender, name, location, email, login, dob, registered, phone, cell, picture, nat
