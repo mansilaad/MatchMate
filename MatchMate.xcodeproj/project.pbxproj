@@ -11,6 +11,8 @@
 		A4419DFB2D5DF43A00D3EBFC /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4419DFA2D5DF42500D3EBFC /* CoreDataManager.swift */; };
 		A4419DFD2D5DF47500D3EBFC /* MatchCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4419DFC2D5DF47500D3EBFC /* MatchCardView.swift */; };
 		A4A284082D5D93D200AB35A5 /* MatchListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4A284072D5D93D200AB35A5 /* MatchListView.swift */; };
+		A4A7232A2D5E557400C1CE7F /* APIResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4A723292D5E556E00C1CE7F /* APIResponse.swift */; };
+		A4A7232C2D5E55EE00C1CE7F /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4A7232B2D5E55E400C1CE7F /* NetworkMonitor.swift */; };
 		A4C5CB3F2D5D041E00054D0A /* MatchMateApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C5CB3E2D5D041E00054D0A /* MatchMateApp.swift */; };
 		A4C5CB412D5D041E00054D0A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C5CB402D5D041E00054D0A /* ContentView.swift */; };
 		A4C5CB432D5D041F00054D0A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A4C5CB422D5D041F00054D0A /* Assets.xcassets */; };
@@ -42,6 +44,8 @@
 		A4419DFA2D5DF42500D3EBFC /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		A4419DFC2D5DF47500D3EBFC /* MatchCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchCardView.swift; sourceTree = "<group>"; };
 		A4A284072D5D93D200AB35A5 /* MatchListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchListView.swift; sourceTree = "<group>"; };
+		A4A723292D5E556E00C1CE7F /* APIResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIResponse.swift; sourceTree = "<group>"; };
+		A4A7232B2D5E55E400C1CE7F /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
 		A4C5CB3B2D5D041E00054D0A /* MatchMate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MatchMate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4C5CB3E2D5D041E00054D0A /* MatchMateApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchMateApp.swift; sourceTree = "<group>"; };
 		A4C5CB402D5D041E00054D0A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -90,6 +94,8 @@
 		A4419DF92D5DF41B00D3EBFC /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				A4A7232B2D5E55E400C1CE7F /* NetworkMonitor.swift */,
+				A4A723292D5E556E00C1CE7F /* APIResponse.swift */,
 				A4419DFA2D5DF42500D3EBFC /* CoreDataManager.swift */,
 			);
 			path = Model;
@@ -293,6 +299,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A4A7232A2D5E557400C1CE7F /* APIResponse.swift in Sources */,
+				A4A7232C2D5E55EE00C1CE7F /* NetworkMonitor.swift in Sources */,
 				A4419DF82D5DF3D600D3EBFC /* MatchViewModel.swift in Sources */,
 				A4C5CB412D5D041E00054D0A /* ContentView.swift in Sources */,
 				A4C5CB3F2D5D041E00054D0A /* MatchMateApp.swift in Sources */,
