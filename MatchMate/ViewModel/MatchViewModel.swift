@@ -71,7 +71,7 @@ class MatchViewModel: ObservableObject {
         let userProfiles = coreDataManager.fetchUserProfiles()
         self.users = userProfiles.map { result in
             Result(
-                gender: .male, // Default value, adjust as needed
+                gender: .male,
                 name: Name(title: "", first: result.firstName ?? "", last: result.lastName ?? ""),
                 location: Location(
                     street: Street(number: 0, name: ""),
