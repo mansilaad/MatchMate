@@ -24,7 +24,7 @@ MatchMate is an iOS application that simulates a matrimonial app. The app fetche
 ## Installation
 1. Clone the repository:
    ```sh
-   git clone https://github.com/your-username/MatchMate.git
+   git clone https://github.com/mansilaad/MatchMate.git
    ```
 2. Navigate to the project directory:
    ```sh
