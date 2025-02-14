@@ -17,18 +17,34 @@ class MatchViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private let apiURL = "https://randomuser.me/api/?results=10"
     private let coreDataManager = CoreDataManager.shared
+    
+     init() {
+             observeNetworkStatus() // Observe network status changes
+     }
+    
+     private func observeNetworkStatus() {
+             NetworkMonitor.shared.$isConnected
+                 .receive(on: DispatchQueue.main)
+                 .sink { [weak self] isConnected in
+                     self?.fetchUsers()
+                 }
+                 .store(in: &cancellables)
+     }
 
-    init() {
-        fetchUsers()
-    }
+
     
     func fetchUsers() {
-        if NetworkMonitor.shared.isConnected {
-            fetchFromAPI()
-        } else {
-            fetchFromCoreData()
+        
+        if !NetworkMonitor.shared.isConnected {
+            fetchFromCoreData() // Show cached data first if offline
+            loadStatusFromCoreData()
+            return
         }
+        fetchFromAPI()
+
     }
+    
+    
     
     func fetchFromAPI() {
         guard let url = URL(string: apiURL) else { return }

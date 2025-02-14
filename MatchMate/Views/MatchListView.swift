@@ -9,7 +9,7 @@ import SwiftUI
 
 
 struct MatchListView: View {
-    @ObservedObject var viewModel = MatchViewModel()
+    @StateObject var viewModel = MatchViewModel()
     
     var body: some View {
         ScrollView {
