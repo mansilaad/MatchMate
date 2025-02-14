@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SDWebImageSwiftUI
 
 
 struct MatchListView: View {
@@ -16,17 +17,26 @@ struct MatchListView: View {
             if viewModel.users.isEmpty {
                 ProgressView("Loading...")
             } else {
-                VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 10) {
                     Text("Profile Matches")
                         .font(.headline)
                         .fontWeight(.bold)
                     
                     ForEach(viewModel.users) { user in
+                        let imageUrl = URL(string:"\(user.picture.medium)")
                         if !user.name.first.isEmpty && !user.name.last.isEmpty {
                             VStack(alignment: .center, spacing: 12) {
+                                
+                                WebImage(url: imageUrl)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 150, height: 150)
+                                    .padding(.top, 20)
+                                
                                 Text("\(user.name.first) \(user.name.last)")
                                     .font(.title)
                                     .foregroundColor(Color("MaxBlueGreen"))
+                                    .fontWeight(.bold)
                                 
                                 if !user.location.city.isEmpty && !user.location.state.isEmpty {
                                     Text("\(user.dob.age), \(user.location.city), \(user.location.state)")
@@ -37,24 +47,17 @@ struct MatchListView: View {
                                 if viewModel.statusDict[user.id] == nil {
                                     Spacer()
                                     HStack(spacing: 20) {
-                                        Button(action: {
+                                        CircularButton(systemImage: "multiply") {
                                             viewModel.updateUserStatus(id: user.id, status: "Declined")
-                                        }) {
-                                            Image(systemName: "xmark.circle")
-                                                .resizable()
-                                                .frame(width: 50, height: 50)
-                                                .foregroundColor(Color("MaxBlueGreen"))
                                         }
                                         
-                                        Button(action: {
+                                        CircularButton(systemImage: "checkmark") {
                                             viewModel.updateUserStatus(id: user.id, status: "Accepted")
-                                        }) {
-                                            Image(systemName: "checkmark.circle")
-                                                .resizable()
-                                                .frame(width: 50, height: 50)
-                                                .foregroundColor(.green)
                                         }
+                                        
                                     }
+                                    .padding(.bottom, 20)
+                                    
                                 }
                                 
                                 if let status = viewModel.statusDict[user.id] {
@@ -69,7 +72,7 @@ struct MatchListView: View {
                                         .padding(.top, 10)
                                 }
                             }
-                            .frame(width: 300, height: 250)
+                            .frame(width: 300, height: 350)
                             .background(Color.white)
                             .cornerRadius(15)
                             .shadow(radius: 5)
