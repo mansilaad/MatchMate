@@ -39,8 +39,8 @@ MatchMate is an iOS application that simulates a matrimonial app. The app fetche
 
 ## Requirements
 
-Xcode 12+
-iOS 14+
+Xcode 16.2
+iOS 17+
 
 ## API Integration
 MatchMate fetches user data from the [Random User API](https://randomuser.me/api/?results=10). 
