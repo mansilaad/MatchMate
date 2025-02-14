@@ -63,9 +63,7 @@ class CoreDataManager {
         do {
             if let userProfile = try context.fetch(request).first {
                 userProfile.status = status
-                saveContext()
-                print("updated")
-            }
+                saveContext()            }
         } catch {
             print("Error updating user profile status: \(error)")
         }
